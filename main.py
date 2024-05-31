@@ -10,6 +10,10 @@ data_dir = '/Users/masay/programming/python/20240524_fasttext_pra/text'
 categories = os.listdir(data_dir)
 data = []
 
+# トークナイザの初期化
+tokenizer = Tokenizer()
+
+# カテゴリごとのデータをトークナイズして読み込む
 for category in categories:
     category_path = os.path.join(data_dir, category)
     if os.path.isdir(category_path):
@@ -19,7 +23,9 @@ for category in categories:
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
                 for line in lines:
-                    data.append('__label__{} {}'.format(category, line.strip()))
+                    tokens = tokenizer.tokenize(line.strip(), wakati=True)
+                    tokenized_line = ' '.join(tokens)
+                    data.append('__label__{} {}'.format(category, tokenized_line))
 
 # データをシャッフルして保存
 random.shuffle(data)
@@ -33,13 +39,10 @@ with open('train_data.txt', 'r', encoding='utf-8') as f:
         print(f.readline())
 
 # モデルを訓練する
-model = fasttext.train_supervised('train_data.txt', epoch=5, lr=0.1, wordNgrams=2, verbose=2, minCount=1)
+model = fasttext.train_supervised('train_data.txt', epoch=50, lr=0.1, wordNgrams=2, verbose=2, minCount=1)
 
 # モデルを保存する
 model.save_model('text_classification_model.bin')
-
-# トークナイザの初期化
-tokenizer = Tokenizer()
 
 # テキストをカテゴリ分類する関数
 def classify_text(text, threshold=0.3):
@@ -51,10 +54,11 @@ def classify_text(text, threshold=0.3):
     return labels[0].replace('__label__', '')
 
 # ユーザー入力を受け取り分類するループ
-while True:
-    user_input = input("文章を入力してください（終了するには 'exit' と入力）：")
-    if user_input.lower() == 'exit':
-        break
-    category = classify_text(user_input)
-    print(f"入力された文章: {user_input}")
-    print(f"カテゴリ: {category}")
+if __name__ == "__main__":
+    while True:
+        user_input = input("文章を入力してください（終了するには 'exit' と入力）：")
+        if user_input.lower() == 'exit':
+            break
+        category = classify_text(user_input)
+        print(f"入力された文章: {user_input}")
+        print(f"カテゴリ: {category}")
