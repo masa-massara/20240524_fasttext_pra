@@ -37,5 +37,5 @@ if __name__ == "__main__":
         fasttext_category = classify_with_fasttext(user_input)
         analyzer_result = classify_with_utterance_analyzer(user_input)
         print(f"入力された文章: {user_input}")
-        print(f"FastTextカテゴリ: {fasttext_category}")
-        print(f"UtteranceAnalyzer結果: {analyzer_result['最大の意味カテゴリ']}")
+        print(f"castTextによる分類　: {fasttext_category}")
+        print(f"ポイントによる分類   : {analyzer_result['最大の意味カテゴリ']}")
