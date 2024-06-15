@@ -45,10 +45,12 @@ model = fasttext.train_supervised('train_data.txt', epoch=50, lr=0.1, wordNgrams
 model.save_model('text_classification_model.bin')
 
 # テキストをカテゴリ分類する関数
-def classify_text(text, threshold=0.3):
+def classify_text(text, threshold=0.5):
     tokens = tokenizer.tokenize(text, wakati=True)
     processed_text = ' '.join(tokens)
     labels, probabilities = model.predict(processed_text)
+    # probabilitiesをprintする
+    print(f"probabilities: {probabilities}")
     if probabilities[0] < threshold:
         return '意味なし'
     return labels[0].replace('__label__', '')
